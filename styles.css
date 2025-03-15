@@ -1,1 +1,4 @@
-/* css styles */
+```{css, echo=FALSE}
+.reveal code {
+  max-height: 100% !important;
+}

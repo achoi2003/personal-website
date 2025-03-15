@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Alex Choi">
+
+<title>Project 1 - NBA Game Outcomes Prediction</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../projects.html">Projects</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#process" id="toc-process" class="nav-link" data-scroll-target="#process">Process</a></li>
+  <li><a href="#outcomes" id="toc-outcomes" class="nav-link" data-scroll-target="#outcomes">Outcomes</a></li>
+  <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">Outputs</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Project 1 - NBA Game Outcomes Prediction</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Alex Choi </p>
+          </div>
+  </div>
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This project aims to predict NBA game outcomes using historical data from the 2023-2024 season. By analyzing various predictors such as days since last played, home advantage, and team stability, the goal is to develop an effective classification model that accurately forecasts game results.</p>
+</section>
+<section id="process" class="level2">
+<h2 class="anchored" data-anchor-id="process">Process</h2>
+<p>Data Pre-processing:</p>
+<ul>
+<li>Cleaned original dataset containing 25 predictor variables and 2,460 observations.</li>
+<li>Engineered features: Days Since Last Played, Home Advantage, and Stability.</li>
+<li>Conducted exploratory data analysis (EDA) to evaluate feature relevance.</li>
+</ul>
+<p>Modeling and Evaluation:</p>
+<ul>
+<li>Implemented Quadratic Discriminant Analysis (QDA), Random Forest (RF), and Support Vector Machine (SVM).</li>
+<li>Split data into 75% training and 25% testing subsets.</li>
+<li>Compared models based on accuracy, with SVM performing best (71% accuracy).</li>
+</ul>
+<p>Optimization:</p>
+<ul>
+<li>Tuned hyperparameters for SVM (optimal parameter C identified as 1).</li>
+<li>Conducted iterative model refinement by testing feature subsets.</li>
+</ul>
+</section>
+<section id="outcomes" class="level2">
+<h2 class="anchored" data-anchor-id="outcomes">Outcomes</h2>
+<ul>
+<li>Developed a final SVM model predicting NBA game outcomes with <strong>71% accuracy</strong>.</li>
+<li>Determined that Home Advantage is the most significant predictor, while Days Since Last Played and Stability had minimal impact.</li>
+<li>Demonstrated effectiveness of a streamlined model using fewer, impactful features for accurate sports outcome prediction.</li>
+</ul>
+</section>
+<section id="outputs" class="level2">
+<h2 class="anchored" data-anchor-id="outputs">Outputs</h2>
+<p>Full Model:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Model</th>
+<th style="text-align: center;">Training Accuracy</th>
+<th style="text-align: center;">Testing Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">QDA</td>
+<td style="text-align: center;">0.55</td>
+<td style="text-align: center;">0.55</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">RF</td>
+<td style="text-align: center;">0.60</td>
+<td style="text-align: center;">0.56</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">SVM</td>
+<td style="text-align: center;">0.59</td>
+<td style="text-align: center;">0.54</td>
+</tr>
+</tbody>
+</table>
+<p>Reduced Model With Home Advantage:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Model</th>
+<th style="text-align: center;">Training Accuracy</th>
+<th style="text-align: center;">Testing Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">QDA</td>
+<td style="text-align: center;">0.64</td>
+<td style="text-align: center;">0.68</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">RF</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">0.68</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">SVM</td>
+<td style="text-align: center;">0.68</td>
+<td style="text-align: center;">0.71</td>
+</tr>
+</tbody>
+</table>
+<p><img src="graph-1.png" class="img-fluid" style="width:65.0%" alt="graph-1"> <img src="graph-2.png" class="img-fluid" style="width:65.0%" alt="graph-2"> <img src="graph-3.png" class="img-fluid" style="width:65.0%" alt="graph-3"></p>
+<pre><code>from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, r2_score, mean_squared_error
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Lasso, Ridge, LassoCV, RidgeCV, LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn import svm
+import numpy as np
+df['Game Date'] = pd.to_datetime(df['Game Date'])
+Home = []
+for i in range(df.shape[0]):
+    if df.iloc[:, 1][i][4:6]=='vs':
+        Home.append(1)
+    if df.iloc[:,1][i][4:6]=='@ ':
+        Home.append(0)
+df['home'] = np.array(Home)
+
+df.loc[df['W/L'] == 'W', 'W/L'] = 1
+df.loc[df['W/L'] == 'L', 'W/L'] = 0
+df.loc[df['FT%']=='-','FT%']=1
+Features = ['W/L','PTS', 'FGM', 'FGA',
+        'FG%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 'OREB', 'DREB', 'REB',
+        'AST', 'STL', 'BLK', 'TOV', 'PF', '+/-']
+
+for i in Features:
+  df[i] = df[i].astype(float)
+
+def Weighting_fun(L,alpha=0.5):
+    Res = [np.exp(-alpha * i/5) for i in np.arange(L,0,-1)]
+    Res /= np.sum(Res)
+    #print(Res)
+    return Res
+def Rati_Error(alpha):
+  X_all = []
+  Y_all = []
+  for i in np.arange(500, df.shape[0]):
+      Team_1 = df.iloc[i, 0]
+      Team_2 = df.iloc[i, 1][-3::]
+      Data_Previous_1 = (df.iloc[0:(i - 1), :][df.iloc[0:(i - 1), 0] == Team_1])
+      Data_Previous_2 = (df.iloc[0:(i - 1), :][df.iloc[0:(i - 1), 0] == Team_2])
+      Data_Previous_1 = Data_Previous_1[Data_Previous_1['Game Date'] != df.iloc[i, 2]]
+      Data_Previous_2 = Data_Previous_2[Data_Previous_2['Game Date'] != df.iloc[i, 2]]
+      Data_Previous_1_home = np.array(Data_Previous_1[Data_Previous_1['home'] == df.iloc[i, -1]][Features])
+      Data_Previous_2_home = np.array(Data_Previous_2[Data_Previous_2['home'] == (1 - df.iloc[i, -1])][Features])
+      W1 = Weighting_fun(Data_Previous_1_home.shape[0], alpha).reshape(-1, 1)
+      W2 = Weighting_fun(Data_Previous_2_home.shape[0], alpha).reshape(-1, 1)
+      Data_1 = np.array(Data_Previous_1_home * W1).sum(axis=0)
+      Data_2 = np.array(Data_Previous_2_home * W2).sum(axis=0)
+      Diff = (Data_1 - Data_2).tolist() + [df.iloc[i, -1]]
+      X_all.append(Diff)
+      Y_all.append(df.iloc[i]['W/L'])
+
+  X = np.array(X_all)
+  y = np.array(Y_all)
+  N = len(y)
+  R = 0.75
+  Int = int(N * R)
+  X_train, X_test, y_train, y_test = X[0:Int, :], X[Int::, :], y[0:Int], y[Int::]
+   # Hyperparameter grid
+
+
+  model = svm.SVC(C=1, gamma='scale', kernel='linear', random_state=42)
+  #print(model.get_params())
+  model.fit(X_train, y_train)
+  # Predict using the SVM model
+  predictions = model.predict(X_test)
+  accuracy = model.score(X_test, y_test)
+  train_accuracy = model.score(X_train, y_train)
+  print("Training Accuracy of SVM:", train_accuracy)
+  print("Testing Accuracy of SVM:", accuracy)
+  # Predict using QDA
+  model = QuadraticDiscriminantAnalysis()
+  model.fit(X_train, y_train)
+  # Predict using the QDA model
+  predictions = model.predict(X_test)
+  accuracy = model.score(X_test, y_test)
+  train_accuracy = model.score(X_train, y_train)
+  print("Training Accuracy of QDA:", train_accuracy)
+  print("Testing Accuracy of QDA:", accuracy)
+
+  # Random forest
+  model = RandomForestClassifier(n_estimators=100, random_state=42)
+  model.fit(X_train, y_train)
+  predictions = model.predict(X_test)
+  accuracy = model.score(X_test, y_test)
+  train_accuracy = model.score(X_train, y_train)
+  print("Training Accuracy of Random Forest:", train_accuracy)
+  print("Testing Accuracy of Random Forest:", accuracy)
+
+Rati_Error(0.05)
+#for a in np.linspace(0.05,0.4,10):
+#    Rati_Error(a)
+
+DaysSince = []
+for i in range(df.shape[0]):
+    team = df.iloc[:, 0][i]
+    op = df.iloc[:, 1][i][9:11]
+    current_date = df.iloc[:, 2][i]
+     # filter for earlier games - team
+    team_games_team = df[(df['Team'] == team) &amp; (df['Game Date'] &lt; current_date)]
+
+    if not team_games_team.empty:
+      last_played_date_team = team_games_team['Game Date'].max()
+      days_since_last_team = (current_date - last_played_date_team).days
+    else:
+        days_since_last_team = 0
+    team_games_op = df[(df['Team'] == op) &amp; (df['Game Date'] &lt; current_date)]
+
+    if not team_games_op.empty:
+      last_played_date_op = team_games_op['Game Date'].max()
+      days_since_last_op = (current_date - last_played_date_op).days
+    else:
+        days_since_last_op = 0
+
+    j = days_since_last_team - days_since_last_op
+    DaysSince.append(j)
+df['DaysSince'] = np.array(DaysSince)
+
+Rati_Error(0.05)
+
+Stability = []
+for i in range(df.shape[0]):
+    team = df.iloc[:, 0][i]
+    op = df.iloc[:, 1][i][9:11]
+    current_date = df.iloc[:, 2][i]
+     # filter for earlier games - team
+    team_games_team = df[(df['Team'] == team) &amp; (df['Game Date'] &lt; current_date)]
+
+    if not team_games_team.empty:
+      ratio_team = np.std(team_games_team['REB']/team_games_team['TOV'])
+    else:
+        ratio_team = 0
+
+
+    team_games_op = df[(df['Team'] == op) &amp; (df['Game Date'] &lt; current_date)]
+
+    if not team_games_op.empty:
+      ratio_op = np.std(team_games_op['REB']/team_games_op['TOV'])
+    else:
+        team_games_op = 0
+
+    j = ratio_team - team_games_op
+    Stability.append(j)
+df['Stability'] = np.array(Stability)
+
+Rati_Error(0.05)</code></pre>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

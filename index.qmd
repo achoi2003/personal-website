@@ -1,11 +1,36 @@
 ---
-title: "personal-website"
+title: "Alex Choi"
+about:
+  template: trestles
+  image: profile_pic.jpg
+  links:
+    - icon: linkedin
+      text: linkedin
+      href: https://www.linkedin.com/in/alex-choi-a98b48225/
+    - icon: github
+      text: Github
+      href: https://github.com/achoi2003
+    - icon: inbox-fill
+      text: Email
+      href: "mailto:achoi2003@gmail.com"
+
 ---
 
-This is a Quarto website.
+Alex Choi is a senior at UCLA majoring in **Statistics and Data Science**, who is actively seeking opportunities to contribute to innovative, data-driven projects.  
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Download [My Resume.](Choi_Alexander_Resume.pdf)
 
-```{r}
-1 + 1
-```
+## Education
+
+University of California, Los Angeles  
+Statistics and Data Science, B.S.      
+Cognitive Science with Computing, B.S.   
+September 2021 —
+
+## Experience
+
+Software Engineer & Business Analytics Intern | KAV   
+January 2024 — March 2024  
+
+Research Assistant | Trustworthy AI Lab at UCLA  
+October 2023 — June 2024  

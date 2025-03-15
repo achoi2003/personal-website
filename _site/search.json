@@ -1,10 +1,66 @@
 [
   {
+    "objectID": "projects/project_1.html",
+    "href": "projects/project_1.html",
+    "title": "Project 1 - NBA Game Outcomes Prediction",
+    "section": "",
+    "text": "This project aims to predict NBA game outcomes using historical data from the 2023-2024 season. By analyzing various predictors such as days since last played, home advantage, and team stability, the goal is to develop an effective classification model that accurately forecasts game results."
+  },
+  {
+    "objectID": "projects/project_1.html#process",
+    "href": "projects/project_1.html#process",
+    "title": "Project 1 - NBA Game Outcomes Prediction",
+    "section": "Process",
+    "text": "Process\nData Pre-processing:\n\nCleaned original dataset containing 25 predictor variables and 2,460 observations.\nEngineered features: Days Since Last Played, Home Advantage, and Stability.\nConducted exploratory data analysis (EDA) to evaluate feature relevance.\n\nModeling and Evaluation:\n\nImplemented Quadratic Discriminant Analysis (QDA), Random Forest (RF), and Support Vector Machine (SVM).\nSplit data into 75% training and 25% testing subsets.\nCompared models based on accuracy, with SVM performing best (71% accuracy).\n\nOptimization:\n\nTuned hyperparameters for SVM (optimal parameter C identified as 1).\nConducted iterative model refinement by testing feature subsets."
+  },
+  {
+    "objectID": "projects/project_1.html#outcome",
+    "href": "projects/project_1.html#outcome",
+    "title": "Project 1 - NBA Game Outcomes Prediction",
+    "section": "Outcome",
+    "text": "Outcome\n\nDeveloped a final SVM model predicting NBA game outcomes with 71% accuracy.\nDetermined that Home Advantage is the most significant predictor, while Days Since Last Played and Stability had minimal impact.\nDemonstrated effectiveness of a streamlined model using fewer, impactful features for accurate sports outcome prediction."
+  },
+  {
+    "objectID": "projects/project_1.html#outputs",
+    "href": "projects/project_1.html#outputs",
+    "title": "Project 1 - NBA Game Outcomes Prediction",
+    "section": "Outputs",
+    "text": "Outputs\nFull Model:\n\n\n\nModel\nTraining Accuracy\nTesting Accuracy\n\n\n\n\nQDA\n0.55\n0.55\n\n\nRF\n0.60\n0.56\n\n\nSVM\n0.59\n0.54\n\n\n\nReduced Model With Home Advantage:\n\n\n\nModel\nTraining Accuracy\nTesting Accuracy\n\n\n\n\nQDA\n0.64\n0.68\n\n\nRF\n1.00\n0.68\n\n\nSVM\n0.68\n0.71\n\n\n\n  \nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, confusion_matrix, classification_report, r2_score, mean_squared_error\nfrom sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.linear_model import Lasso, Ridge, LassoCV, RidgeCV, LinearRegression\nfrom sklearn.metrics import mean_squared_error\nfrom sklearn import svm\nimport numpy as np\ndf['Game Date'] = pd.to_datetime(df['Game Date'])\nHome = []\nfor i in range(df.shape[0]):\n    if df.iloc[:, 1][i][4:6]=='vs':\n        Home.append(1)\n    if df.iloc[:,1][i][4:6]=='@ ':\n        Home.append(0)\ndf['home'] = np.array(Home)\n\ndf.loc[df['W/L'] == 'W', 'W/L'] = 1\ndf.loc[df['W/L'] == 'L', 'W/L'] = 0\ndf.loc[df['FT%']=='-','FT%']=1\nFeatures = ['W/L','PTS', 'FGM', 'FGA',\n        'FG%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 'OREB', 'DREB', 'REB',\n        'AST', 'STL', 'BLK', 'TOV', 'PF', '+/-']\n\nfor i in Features:\n  df[i] = df[i].astype(float)\n\ndef Weighting_fun(L,alpha=0.5):\n    Res = [np.exp(-alpha * i/5) for i in np.arange(L,0,-1)]\n    Res /= np.sum(Res)\n    #print(Res)\n    return Res\ndef Rati_Error(alpha):\n  X_all = []\n  Y_all = []\n  for i in np.arange(500, df.shape[0]):\n      Team_1 = df.iloc[i, 0]\n      Team_2 = df.iloc[i, 1][-3::]\n      Data_Previous_1 = (df.iloc[0:(i - 1), :][df.iloc[0:(i - 1), 0] == Team_1])\n      Data_Previous_2 = (df.iloc[0:(i - 1), :][df.iloc[0:(i - 1), 0] == Team_2])\n      Data_Previous_1 = Data_Previous_1[Data_Previous_1['Game Date'] != df.iloc[i, 2]]\n      Data_Previous_2 = Data_Previous_2[Data_Previous_2['Game Date'] != df.iloc[i, 2]]\n      Data_Previous_1_home = np.array(Data_Previous_1[Data_Previous_1['home'] == df.iloc[i, -1]][Features])\n      Data_Previous_2_home = np.array(Data_Previous_2[Data_Previous_2['home'] == (1 - df.iloc[i, -1])][Features])\n      W1 = Weighting_fun(Data_Previous_1_home.shape[0], alpha).reshape(-1, 1)\n      W2 = Weighting_fun(Data_Previous_2_home.shape[0], alpha).reshape(-1, 1)\n      Data_1 = np.array(Data_Previous_1_home * W1).sum(axis=0)\n      Data_2 = np.array(Data_Previous_2_home * W2).sum(axis=0)\n      Diff = (Data_1 - Data_2).tolist() + [df.iloc[i, -1]]\n      X_all.append(Diff)\n      Y_all.append(df.iloc[i]['W/L'])\n\n  X = np.array(X_all)\n  y = np.array(Y_all)\n  N = len(y)\n  R = 0.75\n  Int = int(N * R)\n  X_train, X_test, y_train, y_test = X[0:Int, :], X[Int::, :], y[0:Int], y[Int::]\n   # Hyperparameter grid\n\n\n  model = svm.SVC(C=1, gamma='scale', kernel='linear', random_state=42)\n  #print(model.get_params())\n  model.fit(X_train, y_train)\n  # Predict using the SVM model\n  predictions = model.predict(X_test)\n  accuracy = model.score(X_test, y_test)\n  train_accuracy = model.score(X_train, y_train)\n  print(\"Training Accuracy of SVM:\", train_accuracy)\n  print(\"Testing Accuracy of SVM:\", accuracy)\n  # Predict using QDA\n  model = QuadraticDiscriminantAnalysis()\n  model.fit(X_train, y_train)\n  # Predict using the QDA model\n  predictions = model.predict(X_test)\n  accuracy = model.score(X_test, y_test)\n  train_accuracy = model.score(X_train, y_train)\n  print(\"Training Accuracy of QDA:\", train_accuracy)\n  print(\"Testing Accuracy of QDA:\", accuracy)\n\n  # Random forest\n  model = RandomForestClassifier(n_estimators=100, random_state=42)\n  model.fit(X_train, y_train)\n  predictions = model.predict(X_test)\n  accuracy = model.score(X_test, y_test)\n  train_accuracy = model.score(X_train, y_train)\n  print(\"Training Accuracy of Random Forest:\", train_accuracy)\n  print(\"Testing Accuracy of Random Forest:\", accuracy)\n\nRati_Error(0.05)\n#for a in np.linspace(0.05,0.4,10):\n#    Rati_Error(a)\n\nDaysSince = []\nfor i in range(df.shape[0]):\n    team = df.iloc[:, 0][i]\n    op = df.iloc[:, 1][i][9:11]\n    current_date = df.iloc[:, 2][i]\n     # filter for earlier games - team\n    team_games_team = df[(df['Team'] == team) & (df['Game Date'] < current_date)]\n\n    if not team_games_team.empty:\n      last_played_date_team = team_games_team['Game Date'].max()\n      days_since_last_team = (current_date - last_played_date_team).days\n    else:\n        days_since_last_team = 0\n    team_games_op = df[(df['Team'] == op) & (df['Game Date'] < current_date)]\n\n    if not team_games_op.empty:\n      last_played_date_op = team_games_op['Game Date'].max()\n      days_since_last_op = (current_date - last_played_date_op).days\n    else:\n        days_since_last_op = 0\n\n    j = days_since_last_team - days_since_last_op\n    DaysSince.append(j)\ndf['DaysSince'] = np.array(DaysSince)\n\nRati_Error(0.05)\n\nStability = []\nfor i in range(df.shape[0]):\n    team = df.iloc[:, 0][i]\n    op = df.iloc[:, 1][i][9:11]\n    current_date = df.iloc[:, 2][i]\n     # filter for earlier games - team\n    team_games_team = df[(df['Team'] == team) & (df['Game Date'] < current_date)]\n\n    if not team_games_team.empty:\n      ratio_team = np.std(team_games_team['REB']/team_games_team['TOV'])\n    else:\n        ratio_team = 0\n\n\n    team_games_op = df[(df['Team'] == op) & (df['Game Date'] < current_date)]\n\n    if not team_games_op.empty:\n      ratio_op = np.std(team_games_op['REB']/team_games_op['TOV'])\n    else:\n        team_games_op = 0\n\n    j = ratio_team - team_games_op\n    Stability.append(j)\ndf['Stability'] = np.array(Stability)\n\nRati_Error(0.05)"
+  },
+  {
+    "objectID": "projects/project_2.html",
+    "href": "projects/project_2.html",
+    "title": "Project 2 - The Impact of Proposition 47 on Crime in Los Angeles",
+    "section": "",
+    "text": "This project investigates the effects of Proposition 47 — a 2014 California ballot initiative reclassifying non-violent offenses from felonies to misdemeanors — on crime rates in Los Angeles. It evaluates the policy’s impact on overall crime trends, crime composition, geographic disparities, and demographic effects within four years of implementation."
+  },
+  {
+    "objectID": "projects.html",
+    "href": "projects.html",
+    "title": "My Projects",
+    "section": "",
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\nTitle\n\n\nAuthor\n\n\n\n\n\n\nProject 1 - NBA Game Outcomes Prediction\n\n\nAlex Choi\n\n\n\n\nProject 2 - The Impact of Proposition 47 on Crime in Los Angeles\n\n\nAlex Choi\n\n\n\n\n\n\nNo matching items"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "personal-website",
+    "title": "Alex Choi",
     "section": "",
-    "text": "To learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "Alex Choi is a senior at UCLA majoring in Statistics and Data Science, who is actively seeking opportunities to contribute to innovative, data-driven projects.\nDownload My Resume."
+  },
+  {
+    "objectID": "index.html#education",
+    "href": "index.html#education",
+    "title": "Alex Choi",
+    "section": "Education",
+    "text": "Education\nUniversity of California, Los Angeles\nStatistics and Data Science, B.S.\nCognitive Science with Computing, B.S.\nSeptember 2021 —"
+  },
+  {
+    "objectID": "index.html#experience",
+    "href": "index.html#experience",
+    "title": "Alex Choi",
+    "section": "Experience",
+    "text": "Experience\nSoftware Engineer & Business Analytics Intern | KAV\nJanuary 2024 — March 2024\nResearch Assistant | Trustworthy AI Lab at UCLA\nOctober 2023 — June 2024"
   },
   {
     "objectID": "about.html",
@@ -12,5 +68,33 @@
     "title": "About",
     "section": "",
     "text": "1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "projects/project_1.html#outcomes",
+    "href": "projects/project_1.html#outcomes",
+    "title": "Project 1 - NBA Game Outcomes Prediction",
+    "section": "Outcomes",
+    "text": "Outcomes\n\nDeveloped a final SVM model predicting NBA game outcomes with 71% accuracy.\nDetermined that Home Advantage is the most significant predictor, while Days Since Last Played and Stability had minimal impact.\nDemonstrated effectiveness of a streamlined model using fewer, impactful features for accurate sports outcome prediction."
+  },
+  {
+    "objectID": "projects/project_2.html#process",
+    "href": "projects/project_2.html#process",
+    "title": "Project 2 - The Impact of Proposition 47 on Crime in Los Angeles",
+    "section": "Process",
+    "text": "Process\nData Pre-processing:\n\nSourced extensive crime data (2010-2019) from the Los Angeles Police Department via the City of Los Angeles Open Data Portal.\nPerformed data cleaning steps, including removal of redundant data, resolving crime code discrepancies, and standardizing date/time formats and incident locations.\n\nExploratory Data Analysis:\n\nConducted detailed visual analyses (time-series, histograms, bar charts) to identify crime trends pre- and post-Proposition 47.\nIdentified significant post-implementation increases in overall crime incidents and changes in specific crime types, notably property crimes.\n\nStatistical Analysis & Modeling:\n\nEmployed multivariate regression and two-sample t-tests to analyze relationships between crime rates, crime types, demographics, and policy effects.\nAssessed crime patterns geographically and demographically to detect disparities and crime concentration areas."
+  },
+  {
+    "objectID": "projects/project_2.html#outcomes",
+    "href": "projects/project_2.html#outcomes",
+    "title": "Project 2 - The Impact of Proposition 47 on Crime in Los Angeles",
+    "section": "Outcomes",
+    "text": "Outcomes\n\nDetected an initial 40% surge in crime incidents in the year following Proposition 47, with crime levels remaining elevated compared to pre-implementation.\nFound significant increases in specific property crimes (e.g., petty theft, shoplifting) post-Proposition 47, which was abnormal compared to national trends.\nObserved no significant reduction in racial disparities in arrest rates.\nCrime concentration areas (Downtown, Hollywood, Van Nuys) remained consistent, suggesting entrenched geographic crime dynamics."
+  },
+  {
+    "objectID": "projects/project_2.html#outputs",
+    "href": "projects/project_2.html#outputs",
+    "title": "Project 2 - The Impact of Proposition 47 on Crime in Los Angeles",
+    "section": "Outputs",
+    "text": "Outputs"
   }
 ]
